@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Outil d'auto-diagnostic des métadonnées d’événements disponibles sur un site web</title>
+</head>
+<body>
+  <h1>Outil d'auto-diagnostic des métadonnées d’événements disponibles sur un site web</h1>
+  <h2>Redirection...</h2>
+  <div id="error"></div>
+<script>
+  function error() {
+    document.getElementById('error').innerHTML = "Erreur de redirection. Veuillez réessayer. Si le problème persiste, vous pouvez nous contact à <a href=\"mailto:diagnostic@capacoa.ca\">diagnostic@capacoa.ca</a>.";
+  };
+
+  function queryUrl(site) {
+    return "http://kg.artsdata.ca/sparql/#query=PREFIX+schema%3A+%3Chttp%3A%2F%2Fschema.org%2F%3E%0ASELECT+DISTINCT++%3Fstart+%3Fstatus+%3Fmode+(sample(%3Flabel)+as+%3Fname)++(sample(%3Furl)+as+%3Fwebpage)%0AWHERE+%7B%0A++%3Fe+a+schema%3AEvent+%3B%0A+++++schema%3AstartDate+%3Fstart+%3B%0A+++++schema%3Aname+%3Flabel+%3B%0A+++++schema%3Aurl+%3Furl+%3B%0A+++++schema%3AeventStatus+%3Fstatus+%3B%0A+++++schema%3AeventAttendanceMode+%3Fmode+.%0A++FILTER+CONTAINS(%3Furl%2C%22" + site + "%22)%0A%7D+%0AGROUP+BY+%3Fstart+%3Fstatus+%3Fmode%0ALIMIT+1000%0A&contentTypeConstruct=text%2Fturtle&contentTypeSelect=application%2Fsparql-results%2Bjson&endpoint=%2Fquery&requestMethod=POST&tabTitle=event&headers=%7B%7D&outputFormat=table"
+  }
+
+  const urlParams = new URL(window.location).searchParams;
+  if (urlParams) {
+    site = urlParams.get('site');
+    if (site) {
+      location.replace(queryUrl(site));
+    } else {
+      error();
+    };
+  } else {
+    error();
+  }
+</script>
+</html>
